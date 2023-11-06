@@ -18,9 +18,10 @@
       <collision name='base_link_inertia_collision'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
-            <size>0.47 0.47 0.11</size>
-          </box>
+          <cylinder>
+            <length>0.011</length>
+            <radius>0.063</radius>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -39,7 +40,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iris/meshes/iris.stl</uri>
+               <uri>model://wabble_hitl/meshes/main.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -52,6 +53,7 @@
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
+
     <link name='/imu_link'>
       <pose>0 0 0 0 0 0</pose>
       <inertial>
@@ -85,8 +87,142 @@
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+    
+    <!-- =========================== rubber_0 ============ -->
+   <link name='rubber_0'>
+      <pose relative_to="base_link">0.045 -0.05 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.00001</mass>
+        <inertia>
+          <ixx>9.75e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000273104</iyy>
+          <iyz>0</iyz>
+          <izz>0.000274004</izz>
+        </inertia>
+      </inertial>
+      <collision name='rubber_0_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.01</length>
+            <radius>0.003</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='rubber_0_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+         <cylinder>
+            <length>0.01</length>
+            <radius>0.003</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Yellow</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='rubber_0_joint' type='revolute'>
+      <child>rubber_0</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0.5</spring_reference>
+          <spring_stiffness>0.5</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <!-- joint torsional spring plugin -->
+    <plugin name="front_right_torsional_spring" filename="libgazebo_joint_torsional_spring.so">
+      <kx>0.5</kx>
+      <set_point>0.0</set_point>
+      <joint>rubber_0_joint</joint>
+    </plugin>
+
+     <!-- =========================== arm_0 ============ -->
+    <link name='arm_0'>
+      <pose relative_to="rubber_0">0.035 -0.035 0 0 0 -2.36</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>1.5</mass>
+        <inertia>
+          <ixx>0.029125</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.029125</iyy>
+          <iyz>0</iyz>
+          <izz>0.055225</izz>
+        </inertia>
+      </inertial>
+      <collision name='arm_0_inertia_collision'>
+        <pose>0 0.02 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.13 0.01</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <max_vel>0</max_vel>
+            </ode>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='arm_0_inertia_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://wabble_hitl/meshes/arm.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='arm_0_joint' type='fixed'>
+      <child>arm_0</child>
+      <parent>rubber_0</parent>
+    </joint>
+
+
+     <!-- =========================== rotor_0 ============ -->
     <link name='rotor_0'>
-      <pose>0.13 -0.22 0.023 0 0 0</pose>
+     <!-- <pose>0.085 -0.085 0.01 0 0 0</pose> -->
+      <pose relative_to="arm_0">0 0 0.02 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 0 0</pose>
         <mass>0.005</mass>
@@ -104,7 +240,7 @@
         <geometry>
           <cylinder>
             <length>0.005</length>
-            <radius>0.128</radius>
+            <radius>0.06</radius>
           </cylinder>
         </geometry>
         <surface>
@@ -121,7 +257,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iris/meshes/iris_prop_ccw.dae</uri>
+            <uri>model://wabble_hitl/meshes/wabble_prop_ccw.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -136,7 +272,7 @@
     </link>
     <joint name='rotor_0_joint' type='revolute'>
       <child>rotor_0</child>
-      <parent>base_link</parent>
+      <parent>arm_0</parent>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -150,6 +286,9 @@
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
+
+  <!-- ================================================= -->
+
     <link name='rotor_1'>
       <pose>-0.13 0.2 0.023 0 0 0</pose>
       <inertial>
@@ -418,54 +557,13 @@
       <motorSpeedPubTopic>/motor_speed/3</motorSpeedPubTopic>
       <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
     </plugin>
-    <model name='gps0'>
-      <link name='link'>
-        <pose>0 0 0 0 0 0</pose>
-        <inertial>
-          <pose>0 0 0 0 0 0</pose>
-          <mass>0.01</mass>
-          <inertia>
-            <ixx>2.1733e-06</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>2.1733e-06</iyy>
-            <iyz>0</iyz>
-            <izz>1.8e-07</izz>
-          </inertia>
-        </inertial>
-        <visual name='visual'>
-          <geometry>
-            <cylinder>
-              <radius>0.01</radius>
-              <length>0.002</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <name>Gazebo/Black</name>
-              <uri>__default__</uri>
-            </script>
-          </material>
-        </visual>
-        <sensor name='gps' type='gps'>
-          <pose>0 0 0 0 0 0</pose>
-          <plugin name='gps_plugin' filename='libgazebo_gps_plugin.so'>
-            <robotNamespace/>
-            <gpsNoise>1</gpsNoise>
-            <gpsXYRandomWalk>2.0</gpsXYRandomWalk>
-            <gpsZRandomWalk>4.0</gpsZRandomWalk>
-            <gpsXYNoiseDensity>0.0002</gpsXYNoiseDensity>
-            <gpsZNoiseDensity>0.0004</gpsZNoiseDensity>
-            <gpsVXYNoiseDensity>0.2</gpsVXYNoiseDensity>
-            <gpsVZNoiseDensity>0.4</gpsVZNoiseDensity>
-          </plugin>
-        </sensor>
-      </link>
-    </model>
-    <joint name='gps0_joint' type='fixed'>
-      <parent>base_link</parent>
-      <child>gps0::link</child>
-    </joint>
+    <plugin name="vision_plugin" filename="libgazebo_vision_plugin.so">
+        <robotNamespace></robotNamespace>
+        <pubRate>30</pubRate>
+        <randomWalk>0.1</randomWalk>
+        <noiseDensity>0.01</noiseDensity>
+        <corellationTime>60.0</corellationTime>
+    </plugin>
     <plugin name='groundtruth_plugin' filename='libgazebo_groundtruth_plugin.so'>
       <robotNamespace/>
     </plugin>
@@ -491,15 +589,15 @@
       <mavlink_addr>INADDR_ANY</mavlink_addr>
       <mavlink_tcp_port>4560</mavlink_tcp_port>
       <mavlink_udp_port>14560</mavlink_udp_port>
-      <serialEnabled>1</serialEnabled>
+      <serialEnabled>1</serialEnabled>              <!-- =========== ENABLE/DISABLE HITL =========== -->
       <serialDevice>/dev/ttyUSB0</serialDevice>
+      <hil_mode>1</hil_mode>
+      <hil_state_level>0</hil_state_level>
       <baudRate>921600</baudRate>
       <qgc_addr>INADDR_ANY</qgc_addr>
       <qgc_udp_port>14550</qgc_udp_port>
       <sdk_addr>INADDR_ANY</sdk_addr>
       <sdk_udp_port>14540</sdk_udp_port>
-      <hil_mode>1</hil_mode>
-      <hil_state_level>0</hil_state_level>
       <send_vision_estimation>0</send_vision_estimation>
       <send_odometry>1</send_odometry>
       <enable_lockstep>0</enable_lockstep>
